@@ -7,7 +7,7 @@ const Container = styled.div`
 `;
 
 const index: React.FC = () => {
-    return <Container>hello</Container>;
+    return <Container />;
 };
 
 export default index;
