@@ -45,6 +45,7 @@ module.exports = {
     'no-param-reassign': 'off', // param assign 하지 않기
     'jsx-a11y/label-has-associated-control': 'off',
     'no-invalid-css': 'off',
+    'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
     'no-confusing-arrow': 'off',
     'react/jsx-curly-newline': 'off',
     'linebreak-style': 0,
