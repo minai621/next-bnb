@@ -49,6 +49,7 @@ module.exports = {
     'no-confusing-arrow': 'off',
     'react/jsx-curly-newline': 'off',
     'linebreak-style': 0,
+    'no-undef': 'off',
     indent: 'off',
     'react/jsx-filename-extension': [
       1,
