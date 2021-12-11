@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
 import palette from '../styles/palette';
 import AirbnbLogoIcon from '../public/static/svg/logo/logo.svg';
 import AirbnbLogoTextIcon from '../public/static/svg/logo/logo_text.svg';
+import ModalPortal from './ModalPortal';
+import SignUpModal from './auth/SignUpModal';
+import useModal from '../hooks/useModal';
 
 const Container = styled.div`
 position: sticky;
@@ -111,6 +114,7 @@ z-index: 10;
 `;
 
 const Header: React.FC = () => {
+  const { openModal, ModalPortal } = useModal();
     return (
       <Container>
         <Link href="/">
@@ -123,6 +127,7 @@ const Header: React.FC = () => {
           <button
             type="button"
             className="header-sign-up-button"
+            onClick={openModal}
           >회원가입
           </button>
           <button
@@ -131,6 +136,9 @@ const Header: React.FC = () => {
           >로그인
           </button>
         </div>
+        <ModalPortal>
+          <SignUpModal />
+        </ModalPortal>
       </Container>
     );
 };
