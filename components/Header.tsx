@@ -123,7 +123,7 @@ const Header: React.FC = () => {
             <AirbnbLogoTextIcon />
           </a>
         </Link>
-        <div>
+        <div className="header-auth-buttons">
           <button
             type="button"
             className="header-sign-up-button"

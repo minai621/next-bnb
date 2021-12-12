@@ -50,6 +50,7 @@ module.exports = {
     'react/jsx-curly-newline': 'off',
     'linebreak-style': 0,
     'no-undef': 'off',
+    'react/require-default-props': 'off',
     indent: 'off',
     'react/jsx-filename-extension': [
       1,

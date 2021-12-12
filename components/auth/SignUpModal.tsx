@@ -7,6 +7,9 @@ import OpenedEyeIcon from '../../public/static/svg/auth/opened_eye.svg';
 import ClosedEyeIcon from '../../public/static/svg/auth/closed_eye.svg';
 import palette from '../../styles/palette';
 import Input from '../common/Input';
+import Selector from '../common/Selector';
+import { dayList, monthList, yearList } from '../../lib/staticData';
+import Button from '../common/Button';
 
 const Container = styled.form`
   width: 568px;
@@ -30,7 +33,7 @@ const Container = styled.form`
     }
   }
 
-  .sign-up-birthdat-label {
+  .sign-up-birthday-label {
     font-size: 16px;
     font-weight: 600;
     margin-top: 16px;
@@ -47,6 +50,7 @@ const Container = styled.form`
     .sign-up-modal-birthday-month-selector {
       margin-right: 16px;
       flex-grow: 1;
+      height: 46px;
     }
     .sign-up-modal-birthday-day-selector {
       margin-right: 16px;
@@ -190,6 +194,43 @@ const SignUpModal: React.FC = () => {
             value={password}
             onChange={onChangePassword}
           />
+        </div>
+        <p className="sign-up-birthday-label">생일</p>
+        <p className="sign-up-modal-birthday-info">
+          만 18세 이상의 성인만 회원으로 가입할 수 있습니다. 생일은 다른
+          에어비앤비 이용자에게 공개되지 않습니다.
+        </p>
+        <div className="sign-up-modal-birthday-selectors">
+          <div className="sign-up-modal-birthday-month-selector">
+            <Selector
+              options={monthList}
+              disabledOptions={disabledMoths}
+              defaultValue="월"
+              value={birthMonth}
+              onChange={onChangeBirthMonth}
+            />
+          </div>
+          <div className="sign-up-modal-birthday-day-selector">
+            <Selector
+              options={dayList}
+              disabledOptions={disabledDays}
+              defaultValue="일"
+              value={birthDay}
+              onChange={onChangeBirthDay}
+            />
+          </div>
+          <div className="sign-up-modal-birthday-year-selector">
+            <Selector
+              options={yearList}
+              disabledOptions={disabledYears}
+              defaultValue="년"
+              value={birthYear}
+              onChange={onChangeBirthYear}
+            />
+          </div>
+        </div>
+        <div className="sign-up-modal-submit-button-wrapper">
+          <Button type="submit">가입하기</Button>
         </div>
       </Container>
     );
