@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
+import Image from 'next/image';
+import HamburgerIcon from '../public/static/svg/header/hamburger.svg';
 import palette from '../styles/palette';
 import AirbnbLogoIcon from '../public/static/svg/logo/logo.svg';
 import AirbnbLogoTextIcon from '../public/static/svg/logo/logo_text.svg';
-import ModalPortal from './ModalPortal';
 import SignUpModal from './auth/SignUpModal';
 import useModal from '../hooks/useModal';
+import { useSelector } from '../store';
 
 const Container = styled.div`
 position: sticky;
@@ -73,8 +75,7 @@ z-index: 10;
   }
   .header-user-profile-image {
     margin-left: 8px;
-    width: 30px;
-    height: 30px;
+
     border-radius: 50%;
   }
 }
@@ -114,7 +115,9 @@ z-index: 10;
 `;
 
 const Header: React.FC = () => {
-  const { openModal, ModalPortal } = useModal();
+  const { openModal, ModalPortal, closeModal } = useModal();
+  const user = useSelector((state) => state.user);
+  console.log(user.profileImage);
     return (
       <Container>
         <Link href="/">
@@ -123,21 +126,38 @@ const Header: React.FC = () => {
             <AirbnbLogoTextIcon />
           </a>
         </Link>
-        <div className="header-auth-buttons">
-          <button
-            type="button"
-            className="header-sign-up-button"
-            onClick={openModal}
-          >회원가입
+        {
+          !user.isLogged && (
+          <div className="header-auth-buttons">
+            <button
+              type="button"
+              className="header-sign-up-button"
+              onClick={openModal}
+            >회원가입
+            </button>
+            <button
+              type="button"
+              className="header-login-button"
+            >로그인
+            </button>
+          </div>
+          )
+        }
+        {user.isLogged && (
+          <button className="header-user-profile" type="button">
+            <HamburgerIcon />
+            <Image
+              src="/static/image/user/default_user_profile_image.jpg"
+              width={20}
+              height={20}
+              className="header-user-profile-image"
+              alt=""
+            />
           </button>
-          <button
-            type="button"
-            className="header-login-button"
-          >로그인
-          </button>
-        </div>
+        )}
+
         <ModalPortal>
-          <SignUpModal />
+          <SignUpModal closeModal={closeModal} />
         </ModalPortal>
       </Container>
     );
