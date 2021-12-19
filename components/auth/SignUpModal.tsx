@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import CloseXIcon from '../../public/static/svg/modal/modal_colose_x_icon.svg';
 import MailIcon from '../../public/static/svg/auth/mail.svg';
 import PersonIcon from '../../public/static/svg/auth/person.svg';
@@ -7,6 +8,13 @@ import OpenedEyeIcon from '../../public/static/svg/auth/opened_eye.svg';
 import ClosedEyeIcon from '../../public/static/svg/auth/closed_eye.svg';
 import palette from '../../styles/palette';
 import Input from '../common/Input';
+import Selector from '../common/Selector';
+import { dayList, monthList, yearList } from '../../lib/staticData';
+import Button from '../common/Button';
+import PasswordWarning from './PasswordWarning';
+import { signupAPI } from '../../lib/api/auth';
+import { userActions } from '../../store/user';
+import useValidateMode from '../../hooks/useValidateMode';
 
 const Container = styled.form`
   width: 568px;
@@ -30,7 +38,7 @@ const Container = styled.form`
     }
   }
 
-  .sign-up-birthdat-label {
+  .sign-up-birthday-label {
     font-size: 16px;
     font-weight: 600;
     margin-top: 16px;
@@ -47,6 +55,7 @@ const Container = styled.form`
     .sign-up-modal-birthday-month-selector {
       margin-right: 16px;
       flex-grow: 1;
+      height: 46px;
     }
     .sign-up-modal-birthday-day-selector {
       margin-right: 16px;
@@ -77,10 +86,14 @@ const disabledDays = ['일'];
 //* 선택할 수 없는 년 option
 const disabledYears = ['년'];
 
-const SignUpModal: React.FC = () => {
-    const [email, setEmail] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [firstname, setFirstname] = useState('');
+interface IProps {
+  closeModal: () => void;
+}
+
+const SignUpModal: React.FC<IProps> = ({ closeModal }) => {
+  const [email, setEmail] = useState('');
+  const [lastname, setLastname] = useState('test');
+  const [firstname, setFirstname] = useState('test');
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
 
@@ -89,6 +102,10 @@ const SignUpModal: React.FC = () => {
   const [birthMonth, setBirthMonth] = useState<string | undefined>();
 
   const [passwordFocused, setPasswordFocused] = useState(false);
+
+  const { setValidateMode } = useValidateMode();
+
+  const dispatch = useDispatch();
 
   //*비밀번호 숨김 토글하기
   const toggleHidePassword = useCallback(() => {
@@ -147,52 +164,187 @@ const SignUpModal: React.FC = () => {
     []
   );
 
-    return (
-      <Container>
-        <CloseXIcon className="modal-close-x-icon" />
-        <div className="input-wrapper">
-          <Input
-            placeholder="이메일 주소"
-            type="email"
-            icon={<MailIcon />}
-            name="email"
-            value={email}
-            onChange={onChangeEmail}
-          />
-        </div>
-        <div className="input-wrapper">
-          <Input
-            placeholder="이름 (예: 길동)"
-            icon={<PersonIcon />}
-            value={lastname}
-            onChange={onChangeLastname}
-          />
-        </div>
-        <div className="input-wrapper">
-          <Input
-            placeholder="성 (예: 홍)"
-            icon={<PersonIcon />}
-            value={firstname}
-            onChange={onChangeFirstname}
-          />
-        </div>
-        <div className="input-wrapper">
-          <Input
-            placeholder="비밀번호 설정하기"
-            type={hidePassword ? 'password' : 'text'}
-            icon={
+  const valiateSignupForm = () => {
+    if (!email || !lastname || !firstname || !password) {
+      return false;
+    }
+    if (isPasswordHasNameOrEmail ||
+      !isPasswordOverMinLength ||
+      isPasswordHasNumberOrSymbol) {
+        return false;
+    }
+    if (!birthDay || !birthMonth || !birthYear) {
+      return false;
+    }
+    return true;
+  };
+
+  const onSubmitSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setValidateMode(true);
+    if (valiateSignupForm()) {
+      try {
+        const signupBody = {
+          email,
+          password,
+          firstname,
+          lastname,
+          birthday: new Date(
+            `${birthYear}-${birthMonth!.replace('월', '')}-${birthDay}`
+          ).toISOString(),
+        };
+        const { data } = await signupAPI(signupBody);
+        console.log(data);
+        dispatch(userActions.setLoggedUser(data));
+        closeModal();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
+  const isPasswordHasNameOrEmail = useMemo(
+    () =>
+      !password ||
+      !lastname ||
+      password.includes(lastname) ||
+      password.includes(email.split('@')[0]),
+      [password, lastname, email]
+  );
+
+  const isPasswordOverMinLength = useMemo(
+    () => !password || password.length >= PASSWORD_MIN_LENGTH,
+    [password]
+  );
+
+  const isPasswordHasNumberOrSymbol = useMemo(
+    () =>
+      !(
+        /[{}[\]/?.,;:|)*~`!^\-_+<>@#$%&\\=('"]/g.test(password) ||
+        /[0-9]/g.test(password)
+      ),
+    [password]
+  );
+
+  useEffect(() => {
+    return () => {
+      setValidateMode(false);
+    };
+  }, []);
+
+  return (
+    <Container onSubmit={onSubmitSignUp}>
+      <CloseXIcon className="modal-close-x-icon" onClick={closeModal} />
+      <div className="input-wrapper">
+        <Input
+          placeholder="이메일 주소"
+          type="email"
+          icon={<MailIcon />}
+          name="email"
+          value={email}
+          onChange={onChangeEmail}
+          useValidation
+          isValid={!!email}
+          errorMessage="이메일이 필요합니다."
+        />
+      </div>
+      <div className="input-wrapper">
+        <Input
+          placeholder="이름 (예: 길동)"
+          icon={<PersonIcon />}
+          value={lastname}
+          onChange={onChangeLastname}
+          useValidation
+          isValid={!!lastname}
+          errorMessage="이름을 입력하세요."
+        />
+      </div>
+      <div className="input-wrapper">
+        <Input
+          placeholder="성 (예: 홍)"
+          icon={<PersonIcon />}
+          value={firstname}
+          onChange={onChangeFirstname}
+          useValidation
+          isValid={!!firstname}
+          errorMessage="성을 입력하세요."
+        />
+      </div>
+      <div className="input-wrapper">
+        <Input
+          placeholder="비밀번호 설정하기"
+          type={hidePassword ? 'password' : 'text'}
+          icon={
                 hidePassword ? (
                   <ClosedEyeIcon onClick={toggleHidePassword} />
                 ) : (
                   <OpenedEyeIcon onClick={toggleHidePassword} />
                 )
             }
-            value={password}
-            onChange={onChangePassword}
+          value={password}
+          onChange={onChangePassword}
+          useValidation
+          isValid={
+            !isPasswordHasNameOrEmail &&
+            isPasswordOverMinLength &&
+            !isPasswordHasNumberOrSymbol
+          }
+          errorMessage="비밀번호를 입력하세요."
+          onFocus={onFocusPassword}
+        />
+      </div>
+      {passwordFocused && (
+        <>
+          <PasswordWarning
+            isValid={isPasswordHasNameOrEmail}
+            text="비밀번호는 본인 이름이나 이메일 주소를 포함할 수 없습니다."
+          />
+          <PasswordWarning isValid={!isPasswordOverMinLength} text="최소 8자 이상" />
+          <PasswordWarning
+            isValid={isPasswordHasNumberOrSymbol}
+            text="숫자나 기호를 포함하세요"
+          />
+        </>
+      )}
+      <p className="sign-up-birthday-label">생일</p>
+      <p className="sign-up-modal-birthday-info">
+        만 18세 이상의 성인만 회원으로 가입할 수 있습니다. 생일은 다른
+        에어비앤비 이용자에게 공개되지 않습니다.
+      </p>
+      <div className="sign-up-modal-birthday-selectors">
+        <div className="sign-up-modal-birthday-month-selector">
+          <Selector
+            options={monthList}
+            disabledOptions={disabledMoths}
+            defaultValue="월"
+            value={birthMonth}
+            onChange={onChangeBirthMonth}
           />
         </div>
-      </Container>
-    );
+        <div className="sign-up-modal-birthday-day-selector">
+          <Selector
+            options={dayList}
+            disabledOptions={disabledDays}
+            defaultValue="일"
+            value={birthDay}
+            onChange={onChangeBirthDay}
+          />
+        </div>
+        <div className="sign-up-modal-birthday-year-selector">
+          <Selector
+            options={yearList}
+            disabledOptions={disabledYears}
+            defaultValue="년"
+            value={birthYear}
+            onChange={onChangeBirthYear}
+          />
+        </div>
+      </div>
+      <div className="sign-up-modal-submit-button-wrapper">
+        <Button type="submit">가입하기</Button>
+      </div>
+    </Container>
+  );
 };
 
 export default SignUpModal;
