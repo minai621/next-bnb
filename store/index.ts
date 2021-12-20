@@ -4,12 +4,14 @@ import {
     TypedUseSelectorHook,
     useSelector as useReduxSelector,
   } from 'react-redux';
+import auth from './auth';
 import common from './common';
 import user from './user';
 
 const rootReducer = combineReducers({
     user: user.reducer,
     common: common.reducer,
+    auth: auth.reducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
