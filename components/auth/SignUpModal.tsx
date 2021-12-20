@@ -15,6 +15,7 @@ import PasswordWarning from './PasswordWarning';
 import { signupAPI } from '../../lib/api/auth';
 import { userActions } from '../../store/user';
 import useValidateMode from '../../hooks/useValidateMode';
+import { authActions } from '../../store/auth';
 
 const Container = styled.form`
   width: 568px;
@@ -194,11 +195,10 @@ const SignUpModal: React.FC<IProps> = ({ closeModal }) => {
           ).toISOString(),
         };
         const { data } = await signupAPI(signupBody);
-        console.log(data);
         dispatch(userActions.setLoggedUser(data));
         closeModal();
       } catch (e) {
-        console.error(e);
+        alert(`에러! ${e}`);
       }
     }
   };
@@ -225,6 +225,10 @@ const SignUpModal: React.FC<IProps> = ({ closeModal }) => {
       ),
     [password]
   );
+
+  const changeToLoginModal = () => {
+    dispatch(authActions.setAuthMode('login'));
+  };
 
   useEffect(() => {
     return () => {
@@ -343,6 +347,16 @@ const SignUpModal: React.FC<IProps> = ({ closeModal }) => {
       <div className="sign-up-modal-submit-button-wrapper">
         <Button type="submit">가입하기</Button>
       </div>
+      <p>
+        이미 에어비앤비 계정이 있나요?
+        <span
+          className="sign-up-modal-set-login"
+          role="presentation"
+          onClick={changeToLoginModal}
+        >
+          로그인
+        </span>
+      </p>
     </Container>
   );
 };

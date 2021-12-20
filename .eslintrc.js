@@ -51,6 +51,8 @@ module.exports = {
     'linebreak-style': 0,
     'no-undef': 'off',
     'react/require-default-props': 'off',
+    'no-alert': 'off',
+    'no-console': 'off',
     indent: 'off',
     'react/jsx-filename-extension': [
       1,
