@@ -133,7 +133,7 @@ const registerRoom = createSlice({
             }
             return state;
           },
-          setPublicBedTypeCount(
+        setPublicBedTypeCount(
             state,
             action: PayloadAction<{ type: BedType; count: number }>
           ) {
@@ -152,7 +152,13 @@ const registerRoom = createSlice({
               state.publicBedList[index].count = count;
             }
             return state;
-          },
+        },
+        setBathroomCount(state, action: PayloadAction<number>) {
+            state.bathroomCount = action.payload;
+        },
+        setBathroomType(state, action: PayloadAction<'private' | 'public'>) {
+            state.bathroomType = action.payload;
+        },
     }
 });
 
