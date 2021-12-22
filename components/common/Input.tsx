@@ -35,7 +35,6 @@ const Container = styled.div<InputContainerProps>`
   svg {
     position: absolute;
     right: 11px;
-    top: 15px;
     height: 46px;
   }
   .input-error-message {
@@ -44,37 +43,38 @@ const Container = styled.div<InputContainerProps>`
     font-size: 14px;
     color: ${palette.tawny};
   }
-  .input-error-message {
-    margin-top: 8px;
-    font-weight: 600;
-    font-size: 14px;
-    color: ${palette.tawny};
-  }
-  ${({ useValidation, isValid }) => useValidation && !isValid && css`
-    input {
-      background-color: ${palette.snow};
-      border-color: ${palette.orange};
-      $:focus {
+  ${({ useValidation, isValid }) =>
+    useValidation &&
+    !isValid &&
+    css`
+      input {
+        background-color: ${palette.snow};
         border-color: ${palette.orange};
+        & :focus {
+          border-color: ${palette.orange};
+        }
       }
-    }
-  `}
-  ${({ useValidation, isValid }) => useValidation && isValid && css`
-    input {
-      border-color: ${palette.dark_cyan}
-    }
-  `}
+    `}
+  ${({ useValidation, isValid }) =>
+    useValidation &&
+    isValid &&
+    css`
+      input {
+        border-color: ${palette.dark_cyan};
+      }
+    `}
 `;
 
 interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  // eslint-disable-next-line react/require-default-props
   icon?: JSX.Element;
-  isValid: boolean;
+  label?: string;
+  isValid?: boolean;
   useValidation?: boolean;
   errorMessage?: string;
 }
 
 const Input: React.FC<IProps> = ({
+  label,
   icon,
   isValid = false,
   useValidation = true,
@@ -82,15 +82,22 @@ const Input: React.FC<IProps> = ({
   ...props
 }) => {
   const validateMode = useSelector((state) => state.common.validateMode);
+
   return (
     <Container
       iconExist={!!icon}
       isValid={isValid}
       useValidation={validateMode && useValidation}
     >
-      <input {...props} />
+      {label && (
+        <label>
+          <span>{label}</span>
+          <input {...props} />
+        </label>
+      )}
+      {!label && <input {...props} />}
       {icon}
-      {validateMode && useValidation && !isValid && errorMessage && (
+      {useValidation && validateMode && !isValid && errorMessage && (
         <p className="input-error-message">{errorMessage}</p>
       )}
     </Container>

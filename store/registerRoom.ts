@@ -159,6 +159,54 @@ const registerRoom = createSlice({
         setBathroomType(state, action: PayloadAction<'private' | 'public'>) {
             state.bathroomType = action.payload;
         },
+        setCountry(state, action: PayloadAction<string>) {
+          state.country = action.payload;
+        },
+        setCity(state, action: PayloadAction<string>) {
+          state.city = action.payload;
+        },
+        setDistrict(state, action: PayloadAction<string>) {
+          state.district = action.payload;
+        },
+        setStreetAddress(state, action: PayloadAction<string>) {
+          state.streetAddress = action.payload;
+        },
+        setDetailAddress(state, action: PayloadAction<string>) {
+          state.detailAddress = action.payload;
+        },
+        setPostcode(state, action: PayloadAction<string>) {
+          state.postcode = action.payload;
+        },
+        setLatitude(state, action: PayloadAction<number>) {
+          state.latitude = action.payload;
+        },
+        setLongitude(state, action: PayloadAction<number>) {
+          state.longitude = action.payload;
+        },
+        setAmentities(state, action: PayloadAction<string[]>) {
+          state.amentities = action.payload;
+        },
+        setConveniences(state, action: PayloadAction<string[]>) {
+          state.conveniences = action.payload;
+        },
+        setPhotos(state, action: PayloadAction<string[]>) {
+          state.photos = action.payload;
+        },
+        setDescription(state, action: PayloadAction<string>) {
+          state.description = action.payload;
+        },
+        setTitle(state, action: PayloadAction<string>) {
+          state.title = action.payload;
+        },
+        setPrice(state, action: PayloadAction<number>) {
+          state.price = action.payload;
+        },
+        setStartDate(state, action: PayloadAction<string | null>) {
+          state.startDate = action.payload;
+        },
+        setEndDate(state, action: PayloadAction<string | null>) {
+          state.endDate = action.payload;
+        },
     }
 });
 
